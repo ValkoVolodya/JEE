@@ -1,3 +1,5 @@
+package connectionProvider;
+
 import exceptions.SQLRuntimeException;
 
 import java.sql.Connection;

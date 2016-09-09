@@ -1,3 +1,5 @@
+package connectionProvider;
+
 import java.sql.Connection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
