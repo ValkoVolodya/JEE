@@ -27,7 +27,7 @@ public class DbCreator {
                     + "CAR_ID SERIAL, "
                     + "MANUFACTURER VARCHAR(20) NOT NULL, "
                     + "MODEL VARCHAR(20) NOT NULL, "
-                    + "LICENSE_PLATE VARCHAR(8) NOT NULL, "
+                    + "LICENSE_PLATE VARCHAR(8), "
                     + "PRIMARY KEY (CAR_ID) "
                     + ");";
             statement.execute(createSQL);
