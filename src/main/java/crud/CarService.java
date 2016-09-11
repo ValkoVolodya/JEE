@@ -15,12 +15,14 @@ public class CarService {
         cpf = new ConnectionProviderFactory();
     }
 
-    public void insert(){
+    public void insert(String man, String model, String code){
         try{
             Statement statement = cpf.get().createStatement();
-            String insert = "INSERT INTO CARS" +
-                    "(MANUFACTURER, MODEL, LICENSE_PLATE)" +
-                    "VALUES ('Alfa Romeo', '159', 'AL 1590 FA')";
+            String insert = String.format(
+                    "INSERT INTO CARS (MANUFACTURER, MODEL, LICENSE_PLATE) " +
+                            "VALUES ('%s', '%s', '%s');",
+                    man, model, code
+            );
             statement.executeUpdate(insert);
         } catch (SQLException e){
             throw new SQLRuntimeException(e);
@@ -30,8 +32,10 @@ public class CarService {
     public ResultSet select(String criterium, String value){
         try{
             Statement statement = cpf.get().createStatement();
-            String select = "SELECT ALL FROM CARS WHERE " +
-                    criterium + " = " + value;
+            String select = String.format(
+                    "SELECT * FROM CARS WHERE %s = '%s'",
+                    criterium, value
+            );
             return statement.executeQuery(select);
         }catch (SQLException e){
             throw new SQLRuntimeException(e);
@@ -41,7 +45,9 @@ public class CarService {
     public void delete(int id){
         try{
             Statement statement = cpf.get().createStatement();
-            String delete = "DELETE CARS WHERE CAR_ID = " + id;
+            String delete = String.format(
+                    "DELETE FROM CARS WHERE CAR_ID = %d;", id
+            );
             statement.execute(delete);
         }catch (SQLException e){
             throw new SQLRuntimeException(e);
@@ -51,7 +57,10 @@ public class CarService {
     public void delete(String criterium, String value){
         try{
             Statement statement = cpf.get().createStatement();
-            String delete = "DELETE CARS WHERE " + criterium + " = " + value;
+            String delete = String.format(
+                    "DELETE FROM CARS WHERE %s = '%s'",
+                    criterium, value
+            );
             statement.execute(delete);
         }catch (SQLException e){
             throw new SQLRuntimeException(e);
@@ -61,8 +70,10 @@ public class CarService {
     public void update(int id, String criterium, String newValue){
         try{
             Statement statement = cpf.get().createStatement();
-            String update = "UPDATE CARS SET " + criterium + " = " +
-                    newValue + " WHERE car_id = " + id;
+            String update = String.format(
+                    "UPDATE CARS SET %s = '%s' WHERE car_id = %d",
+                    criterium, newValue, id
+            );
             statement.execute(update);
         }catch (SQLException e){
             throw new SQLRuntimeException(e);
