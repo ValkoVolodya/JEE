@@ -15,8 +15,7 @@ public class MainServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException{
-        PrintWriter out = resp.getWriter();
-        out.print("<h1>Hello Servlet</h1>");
+        req.getRequestDispatcher("index.jsp").forward(req, resp);
     }
 
     @Override
