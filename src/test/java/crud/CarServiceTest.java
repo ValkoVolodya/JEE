@@ -1,86 +1,86 @@
 package crud;
 
-import connectionProvider.ConnectionProviderFactory;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import entity.Car;
+import org.junit.*;
 import utils.DbCreator;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Created by insomniac on 9/9/16.
+ * Test class for crud methods
  */
 public class CarServiceTest {
 
-    CarService cs;
+    private CarService cs;
+    private static Car car;
+    private static Car carForUpdate;
 
     @BeforeClass
     public static void createDB(){
         DbCreator db = new DbCreator();
+        car = new Car.Builder("Alfa Romeo", "159")
+                .license_plate("AL1999FA")
+                .build();
+        carForUpdate = new Car.Builder("Alfa Romeo", "4C")
+                .license_plate("AL1999FA")
+                .build();
     }
+
+    @Before
+    public void createEntityInDB(){
+        cs = new CarService();
+        cs.insert(car);
+    }
+
+    @After
+    public void deleteEntityInDB(){
+        cs = new CarService();
+        cs.delete(car);
+    }
+
 
     @Test
     public void testSave(){
         cs = new CarService();
-        cs.insert("Seat", "Leon", "9999");
-        ResultSet rs = cs.select("MODEL", "Leon");
-        try {
-            while (rs.next()) {
-                assertEquals(rs.getString("MODEL"), "Leon");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        List<Car> result = cs.select("MODEL", "159");
+        assertEquals(result.get(0), car);
+        cs.delete(car);
     }
 
     @Test
     public void testUpdate(){
         cs = new CarService();
-        cs.update(0, "LICENSE_PLATE", "AS3223IS");
-        ResultSet rs = cs.select("MODEL", "Leon");
-        try {
-            while (rs.next()) {
-                assertEquals(rs.getString("LICENSE_PLATE"), "AS3223IS");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        List<Car> result = cs.select("MODEL", "159");
+        Car carWithId = result.get(0);
+        Car carFU = new Car.Builder(carForUpdate.getManufacturer(),
+                carForUpdate.getModel())
+                .car_id(carWithId.getCar_id())
+                .license_plate(carForUpdate.getLicense_plate())
+                .build();
+        cs.update(carFU);
+        result = cs.select("MODEL", "4C");
+        assertEquals(result.get(0), carFU);
+        cs.delete(carFU);
     }
 
+
     @Test
-    public void testDeleteByField(){
+    public void testDeleteByObject(){
         cs = new CarService();
-        cs.delete("MODEL", "Leon");
-        ResultSet rs = cs.select("MODEL", "Leon");
-        try {
-            assertFalse(rs.next());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        cs.delete(car);
+        List<Car> list = cs.select("MODEL", "159");
+        assertTrue(list.size() == 0);
     }
 
     @Test
     public void testDeleteById(){
         cs = new CarService();
-        ResultSet rs = cs.select("MODEL", "Leon");
-        int id = 0;
-        try {
-            while (rs.next()){
-                id = rs.getInt("CAR_ID");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        cs.delete(id);
-        try {
-            assertFalse(rs.next());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        List<Car> result = cs.select("MODEL", "159");
+        cs.delete(result.get(0).getCar_id());
+        result = cs.select("MODEL", "159");
+        assertTrue(result.size() == 0);
     }
 }
